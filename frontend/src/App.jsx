@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AtmosphericBackground from './components/AtmosphericBackground';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import TravelForm from './components/TravelForm';
@@ -70,6 +71,7 @@ export default function App() {
 
   return (
     <div className="app-root">
+      <AtmosphericBackground />
       <Navbar onNavigate={handleNavigate} />
 
       <main className="main-content">
