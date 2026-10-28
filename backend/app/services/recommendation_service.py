@@ -93,7 +93,10 @@ class RecommendationService:
                 f"for the selected trip duration and group size. Showing closest available options with cost breakdown."
             )
 
-        # Step 4: Generate Grounded Itineraries via LLM / Gemma 3:1b
+        # Step 4: Generate Grounded Itineraries & Fast Batch Match Reasoning
+        selected_destinations = [item["destination"] for item in selected]
+        match_reasons = LLMService.generate_batch_match_reasons(selected_destinations, request)
+
         recommendations: List[DestinationRecommendation] = []
         for item in selected:
             dest = item["destination"]
@@ -101,11 +104,18 @@ class RecommendationService:
             status = item["budget_status"]
             warnings = item["warnings"]
 
-            # Call LLM Service
-            ai_data = LLMService.generate_recommendation_details(
-                destination=dest,
-                breakdown=breakdown,
-                request=request,
+            daily_expense_est = (
+                breakdown.food_cost + breakdown.local_transport_cost + breakdown.activity_cost
+            ) / (request.duration_days * request.travellers if request.duration_days > 0 else 1)
+
+            # Instant factual itinerary grounded in verified attractions (0ms latency, zero hallucination)
+            itinerary = LLMService._create_deterministic_itinerary(
+                dest, request.duration_days, daily_expense_est
+            )
+
+            reason = match_reasons.get(
+                dest.destination_id,
+                f"{dest.name} in {dest.state} aligns with your {', '.join(request.preferences)} trip style and budget."
             )
 
             rec_card = DestinationRecommendation(
@@ -113,7 +123,7 @@ class RecommendationService:
                 name=dest.name,
                 state=dest.state,
                 description=dest.description,
-                match_reason=ai_data.get("match_reason", ""),
+                match_reason=reason,
                 budget_status=status,
                 total_estimated_cost=breakdown.total_cost,
                 cost_per_person=breakdown.cost_per_person,
@@ -121,7 +131,7 @@ class RecommendationService:
                 major_attractions=dest.attractions,
                 travel_tips=dest.travel_tips,
                 best_season=dest.best_season,
-                day_wise_itinerary=ai_data.get("day_wise_itinerary", []),
+                day_wise_itinerary=itinerary,
                 missing_data_warnings=warnings,
                 source_urls=dest.source_urls,
                 confidence=dest.estimated_cost_confidence,
