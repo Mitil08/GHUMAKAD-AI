@@ -1,67 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { fetchHealth } from '../services/api';
+import React, { useState } from 'react';
 
+/**
+ * Editorial Bharat Atlas Navbar matching the provided design screenshots.
+ * 
+ * Features:
+ * - Brand emblem circle + Ghumakad AI with "BHARAT ATLAS · V2" subtitle
+ * - Center white pill navigation bar: Home, Plan, Destinations, Stories, About
+ * - Terracotta CTA pill: "Plan My Adventure"
+ */
 export default function Navbar({ onNavigate }) {
-  const [healthStatus, setHealthStatus] = useState(null);
+  const [activeTab, setActiveTab] = useState('Home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-    async function checkStatus() {
-      const data = await fetchHealth();
-      if (isMounted) {
-        setHealthStatus(data);
-      }
+  const navLinks = [
+    { name: 'Home', target: 'hero' },
+    { name: 'Plan', target: 'planner' },
+    { name: 'Destinations', target: 'featured' },
+    { name: 'Stories', target: 'featured' },
+    { name: 'About', target: 'how-it-works' },
+  ];
+
+  const handleLinkClick = (tabName, targetId) => {
+    setActiveTab(tabName);
+    setMobileMenuOpen(false);
+    if (onNavigate) {
+      onNavigate(targetId);
     }
-    checkStatus();
-    const interval = setInterval(checkStatus, 15000);
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, []);
-
-  const isAiReady = healthStatus?.ai_ready;
-  const isApiUp = healthStatus?.components?.api?.status === 'operational';
+  };
 
   return (
     <header className="navbar-container">
       <div className="container navbar-content">
-        <div className="navbar-brand" onClick={() => onNavigate('hero')} role="button" tabIndex={0}>
-          <div className="brand-logo-icon">🧭</div>
-          <div className="brand-text">
+        {/* Brand */}
+        <div
+          className="navbar-brand"
+          onClick={() => handleLinkClick('Home', 'hero')}
+          role="button"
+          tabIndex={0}
+        >
+          <div className="brand-circle-emblem">
+            <span className="brand-emblem-dot" />
+          </div>
+          <div className="brand-text-block">
             <span className="brand-title">Ghumakad AI</span>
-            <span className="brand-badge">BETA</span>
+            <span className="brand-subtext">BHARAT ATLAS · V2</span>
           </div>
         </div>
 
-        <nav className="navbar-nav">
-          <a href="#planner" onClick={(e) => { e.preventDefault(); onNavigate('planner'); }} className="nav-link">
-            Plan Trip
-          </a>
-          <a href="#featured" onClick={(e) => { e.preventDefault(); onNavigate('featured'); }} className="nav-link">
-            Destinations
-          </a>
-          <a href="#how-it-works" onClick={(e) => { e.preventDefault(); onNavigate('how-it-works'); }} className="nav-link">
-            How It Works
-          </a>
+        {/* Center Navigation Pill Bar */}
+        <nav className="center-nav-pill">
+          {navLinks.map((link) => (
+            <button
+              key={link.name}
+              type="button"
+              className={`nav-pill-item ${activeTab === link.name ? 'active' : ''}`}
+              onClick={() => handleLinkClick(link.name, link.target)}
+            >
+              {link.name}
+            </button>
+          ))}
         </nav>
 
-        <div className="navbar-status">
-          {isAiReady ? (
-            <span className="badge badge-success" title="Ollama Gemma 3:1b and Vector Store are connected">
-              <span className="status-dot green"></span> Gemma 3:1b Ready
-            </span>
-          ) : isApiUp ? (
-            <span className="badge badge-info" title="API is online; AI model is warming up">
-              <span className="status-dot blue"></span> Backend Online
-            </span>
-          ) : (
-            <span className="badge badge-warning" title="Backend not reachable">
-              <span className="status-dot amber"></span> Standby
-            </span>
-          )}
+        {/* Right CTA Button */}
+        <div className="navbar-right">
+          <button
+            type="button"
+            className="btn-terracotta nav-cta-btn"
+            onClick={() => handleLinkClick('Plan', 'planner')}
+          >
+            Plan My Adventure
+          </button>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            type="button"
+            className={`mobile-menu-btn ${mobileMenuOpen ? 'open' : ''}`}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <span className="hamburger-line" />
+            <span className="hamburger-line" />
+            <span className="hamburger-line" />
+          </button>
         </div>
       </div>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="mobile-drawer">
+          <div className="mobile-nav-links">
+            {navLinks.map((link) => (
+              <button
+                key={link.name}
+                type="button"
+                className={`mobile-nav-item ${activeTab === link.name ? 'active' : ''}`}
+                onClick={() => handleLinkClick(link.name, link.target)}
+              >
+                {link.name}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="btn-terracotta mobile-cta-btn"
+              onClick={() => handleLinkClick('Plan', 'planner')}
+            >
+              Plan My Adventure
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

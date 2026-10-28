@@ -1,27 +1,56 @@
 import React from 'react';
 
+/**
+ * Editorial Bharat Atlas Footer matching all 4 screenshots
+ */
 export default function Footer() {
   return (
-    <footer className="footer-container">
-      <div className="container footer-content">
-        <div className="footer-brand">
-          <div className="brand-logo-icon">🧭</div>
-          <span className="brand-name">Ghumakad AI</span>
-          <p className="footer-tagline">"Your Budget. Your Vibe. Your Next Adventure."</p>
-        </div>
+    <footer className="footer-editorial">
+      <div className="container footer-content-grid">
+        {/* Left Column: Brand & Hackathon Disclaimer */}
+        <div className="footer-brand-col">
+          <div className="footer-brand-title-wrap">
+            <span className="footer-brand-circle" />
+            <span className="footer-brand-name">Ghumakad AI</span>
+          </div>
 
-        <div className="footer-tech">
-          <div className="tech-badge">Python 3.13 & Flask</div>
-          <div className="tech-badge">React & Vite (JavaScript)</div>
-          <div className="tech-badge">Gemma 3:1b via Ollama</div>
-          <div className="tech-badge">ChromaDB Local Vector Store</div>
-        </div>
-
-        <div className="footer-bottom">
-          <p>© 2026 Ghumakad AI. Open source under the MIT License.</p>
-          <p className="disclaimer">
-            Costs are calculated from baseline tariffs. Always verify live transportation schedules and seasonal tariffs before travelling.
+          <p className="footer-disclaimer-copy">
+            Prototype for hackathon. Mock prices only — connect Flask + Ollama backend for live AI results.
           </p>
+
+          <div className="footer-stack-pill">
+            <span>Stack: Flask · LangChain · ChromaDB · Gemma 3:1b</span>
+          </div>
+        </div>
+
+        {/* Right Columns: Explore, Build, Hackathon */}
+        <div className="footer-links-group">
+          <div className="footer-nav-col">
+            <h5 className="footer-col-heading">Explore</h5>
+            <ul className="footer-nav-list">
+              <li><a href="#featured">Manali</a></li>
+              <li><a href="#featured">Goa</a></li>
+              <li><a href="#featured">Udaipur</a></li>
+              <li><a href="#featured">Munnar</a></li>
+            </ul>
+          </div>
+
+          <div className="footer-nav-col">
+            <h5 className="footer-col-heading">Build</h5>
+            <ul className="footer-nav-list">
+              <li><a href="#planner">Trip planner</a></li>
+              <li><a href="#how-it-works">REST API docs</a></li>
+              <li><a href="#how-it-works">Backend /frontend /backend</a></li>
+            </ul>
+          </div>
+
+          <div className="footer-nav-col">
+            <h5 className="footer-col-heading">Hackathon</h5>
+            <ul className="footer-nav-list">
+              <li><a href="#how-it-works">Demo script</a></li>
+              <li><a href="#how-it-works">Pitch deck</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </footer>

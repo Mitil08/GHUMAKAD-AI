@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import MountainTerrainCanvas from './components/MountainTerrainCanvas';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import TravelForm from './components/TravelForm';
@@ -18,12 +17,12 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastSubmittedQuery, setLastSubmittedQuery] = useState({
-    budget: 15000,
-    duration_days: 3,
-    preferences: ['mountains', 'adventure'],
-    departure_location: 'Bhopal, Madhya Pradesh',
+    budget: 45000,
+    duration_days: 7,
+    preferences: ['mountains', 'beaches', 'heritage'],
+    departure_location: 'New Delhi (DEL)',
     travellers: 2,
-    travel_style: 'budget',
+    travel_style: 'mid-range',
   });
 
   const handleFormSubmit = async (criteria) => {
@@ -49,11 +48,10 @@ export default function App() {
   };
 
   const handleSelectFeaturedDestination = (dest) => {
-    // Populate form with destination's primary vibe and scroll to planner
     setLastSubmittedQuery((prev) => ({
       ...prev,
-      preferences: dest.destination_types.slice(0, 2),
-      budget: Math.max(10000, (dest.accommodation_cost || 1500) * 3 + (dest.food_cost || 500) * 6),
+      preferences: dest.destination_types ? dest.destination_types.slice(0, 2) : ['mountains'],
+      budget: Math.max(25000, (dest.accommodation_cost || 1500) * 4 + (dest.food_cost || 500) * 8),
     }));
 
     const plannerEl = document.getElementById('planner');
@@ -71,11 +69,14 @@ export default function App() {
 
   return (
     <div className="app-root">
-      <MountainTerrainCanvas />
       <Navbar onNavigate={handleNavigate} />
 
       <main className="main-content">
-        <Hero onStartPlanning={() => handleNavigate('planner')} />
+        <Hero
+          onStartPlanning={() => handleNavigate('planner')}
+          onExploreDestinations={() => handleNavigate('featured')}
+          onSearchFilter={() => handleNavigate('planner')}
+        />
 
         <div className="container">
           <TravelForm
@@ -85,7 +86,7 @@ export default function App() {
           />
         </div>
 
-        {/* Results Section */}
+        {/* Results Section (Matches Screenshot 4: "Picked for your December soul") */}
         <section className="results-section" id="results">
           <div className="container">
             {isLoading && <LoadingIndicator />}
@@ -99,22 +100,36 @@ export default function App() {
 
             {!isLoading && !error && recommendationData && (
               <div className="recommendations-container">
-                <div className="results-summary-card glass-card">
-                  <div className="summary-text-wrap">
-                    <span className="badge badge-primary">Recommendation Engine</span>
-                    <h3 className="summary-title">Travel Recommendations</h3>
-                    <p className="summary-desc">{recommendationData.summary}</p>
+                {/* Editorial Results Header (Screenshot 4) */}
+                <div className="editorial-results-header">
+                  <div className="results-header-left">
+                    <span className="results-count-pill">
+                      <span className="pill-bar">▌</span>{' '}
+                      {recommendationData.recommendations?.length || 5} matches for ₹
+                      {Math.round((recommendationData.query?.budget || 45000) / 1000)}k ·{' '}
+                      {recommendationData.query?.duration_days || 7} days ·{' '}
+                      {recommendationData.query?.travellers || 3} travellers
+                    </span>
+                    <h2 className="editorial-results-title">Picked for your December soul</h2>
+                    <p className="editorial-results-sub">
+                      Mock recommendations — swap with GET /api/recommend?budget=45000 in production.
+                    </p>
                   </div>
-                  <div className="query-meta-pills">
-                    <span className="meta-pill">💰 Budget: ₹{recommendationData.query?.budget?.toLocaleString('en-IN')}</span>
-                    <span className="meta-pill">⏱️ {recommendationData.query?.duration_days} Days</span>
-                    <span className="meta-pill">👥 {recommendationData.query?.travellers} Traveller(s)</span>
-                    <span className="meta-pill">🎒 {recommendationData.query?.travel_style}</span>
+
+                  <div className="results-header-filters">
+                    <button type="button" className="btn-pill-outline filter-option-btn">
+                      <span>Sort: Best match</span>
+                      <span className="btn-glyph">▌</span>
+                    </button>
+                    <button type="button" className="btn-pill-outline filter-option-btn">
+                      <span>Filter: Under budget</span>
+                      <span className="btn-glyph">▌</span>
+                    </button>
                   </div>
                 </div>
 
                 {recommendationData.recommendations && recommendationData.recommendations.length > 0 ? (
-                  <div className="recommendations-list">
+                  <div className="editorial-results-grid">
                     {recommendationData.recommendations.map((rec) => (
                       <DestinationCard
                         key={rec.destination_id}
@@ -122,6 +137,32 @@ export default function App() {
                         userQuery={recommendationData.query}
                       />
                     ))}
+
+                    {/* 6th Card: Regenerate with AI (Screenshot 4) */}
+                    <div className="regenerate-ai-card">
+                      <span className="regenerate-tag">NOT VIBING?</span>
+                      <h3 className="regenerate-title">Regenerate with AI</h3>
+                      <p className="regenerate-sub">
+                        Tweak sliders — Gemma re-ranks 120+ places via embeddings in ~4s.
+                      </p>
+
+                      <div className="regenerate-input-wrap">
+                        <input
+                          type="text"
+                          className="regenerate-input"
+                          placeholder="More snow, less crowd..."
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        className="btn-terracotta surprise-me-btn"
+                        onClick={() => handleFormSubmit(lastSubmittedQuery)}
+                      >
+                        <span>Surprise me</span>
+                        <span className="btn-glyph">▌</span>
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <EmptyResultsState
@@ -129,17 +170,12 @@ export default function App() {
                     onAdjustFilters={() => handleNavigate('planner')}
                   />
                 )}
-
-                {recommendationData.disclaimer && (
-                  <div className="engine-disclaimer">
-                    <span>⚖️ {recommendationData.disclaimer}</span>
-                  </div>
-                )}
               </div>
             )}
           </div>
         </section>
 
+        {/* Trending Section (Screenshot 3: "Five worlds, one country") */}
         <FeaturedDestinations onSelectDestination={handleSelectFeaturedDestination} />
 
         <HowItWorks />

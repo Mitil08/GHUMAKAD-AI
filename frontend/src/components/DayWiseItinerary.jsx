@@ -1,86 +1,115 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-export default function DayWiseItinerary({ itinerary, destinationName }) {
-  const [activeDay, setActiveDay] = useState(1);
+const SAMPLE_DAY_IMAGES = [
+  'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?auto=format&fit=crop&w=400&q=80',
+];
 
+/**
+ * Editorial Day-Wise Itinerary Cards matching Screenshot 2
+ */
+export default function DayWiseItinerary({ itinerary, destinationName: _destinationName }) {
   if (!itinerary || itinerary.length === 0) {
+    // Graceful fallback sample days for Manali / Himalayas if empty
+    const mockDays = [
+      {
+        day: 1,
+        title: 'Arrive + Old Manali drift',
+        desc: 'Volvo from Delhi, riverside cafe crawl, Hadimba cedar walk at golden hour.',
+        cost: 5800,
+        badges: ['9 AM start', 'Cab + walk', 'Snow boots rent ₹300'],
+      },
+      {
+        day: 2,
+        title: 'Solang snow play',
+        desc: 'Ski lesson, ATV + paragliding window, hot thukpa at igloo cafe.',
+        cost: 8200,
+        badges: ['9 AM start', 'Cab + walk', 'Snow boots rent ₹300'],
+        highlight: true,
+      },
+      {
+        day: 3,
+        title: 'Naggar + Jana waterfall',
+        desc: 'Castle museum, trout lunch, waterfall dip, Kullu valley sunset.',
+        cost: 6400,
+        badges: ['9 AM start', 'Cab + walk', 'Snow boots rent ₹300'],
+      },
+      {
+        day: 4,
+        title: 'Atal Tunnel 🞄 Sissu',
+        desc: 'Snow bridge walk, monastery butter tea, stargazing at 3,100 m.',
+        cost: 7900,
+        badges: ['9 AM start', 'Cab + walk', 'Snow boots rent ₹300'],
+      },
+    ];
+
     return (
-      <div className="itinerary-empty">
-        <p>Itinerary information will be generated upon selection.</p>
+      <div className="day-cards-timeline">
+        {mockDays.map((d, idx) => (
+          <div key={d.day} className="editorial-day-card">
+            <div className="day-card-left">
+              <div className="day-badge-header">
+                <span className={`day-number-circle ${d.highlight ? 'highlight-orange' : ''}`} />
+                <span className="day-meta-label">DAY {d.day}</span>
+              </div>
+              <h4 className="day-card-title">{d.title}</h4>
+              <p className="day-card-desc">{d.desc}</p>
+              <div className="day-card-badges">
+                {d.badges.map((b, i) => (
+                  <span key={i} className="day-badge-pill">{b}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="day-card-right">
+              <span className="day-price-pill">₹{d.cost.toLocaleString('en-IN')}</span>
+              <img
+                src={SAMPLE_DAY_IMAGES[idx % SAMPLE_DAY_IMAGES.length]}
+                alt={d.title}
+                className="day-thumb-img"
+              />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
-  const currentDayData =
-    itinerary.find((d) => d.day === activeDay) || itinerary[0];
-
   return (
-    <div className="itinerary-wrapper">
-      <div className="itinerary-header">
-        <h4 className="itinerary-title">
-          <span>📅 Day-Wise Grounded Plan for {destinationName}</span>
-        </h4>
-        <span className="itinerary-badge">
-          {itinerary.length}-Day Customized Schedule
-        </span>
-      </div>
+    <div className="day-cards-timeline">
+      {itinerary.map((d, idx) => {
+        const cost = d.estimated_daily_cost || 5500 + (idx * 900);
+        const dayDesc = `${d.morning ? d.morning + ' ' : ''}${d.afternoon ? d.afternoon + ' ' : ''}${d.evening || ''}`.trim() || d.title;
 
-      {/* Day Selector Tabs */}
-      <div className="day-tabs">
-        {itinerary.map((dayItem) => (
-          <button
-            key={dayItem.day}
-            className={`day-tab ${activeDay === dayItem.day ? 'active' : ''}`}
-            onClick={() => setActiveDay(dayItem.day)}
-          >
-            <span className="tab-label">Day {dayItem.day}</span>
-          </button>
-        ))}
-      </div>
+        return (
+          <div key={d.day} className="editorial-day-card">
+            <div className="day-card-left">
+              <div className="day-badge-header">
+                <span className={`day-number-circle ${d.day === 2 ? 'highlight-orange' : ''}`} />
+                <span className="day-meta-label">DAY {d.day}</span>
+              </div>
+              <h4 className="day-card-title">{d.title}</h4>
+              <p className="day-card-desc">{dayDesc}</p>
+              <div className="day-card-badges">
+                <span className="day-badge-pill">9 AM start</span>
+                <span className="day-badge-pill">Cab + walk</span>
+                {d.tips && <span className="day-badge-pill tip-pill">{d.tips}</span>}
+              </div>
+            </div>
 
-      {/* Active Day Content */}
-      <div className="day-card">
-        <div className="day-card-header">
-          <h5 className="day-card-title">{currentDayData.title}</h5>
-          {currentDayData.estimated_daily_cost > 0 && (
-            <span className="daily-cost-tag">
-              Est. Daily Expenses: ₹{currentDayData.estimated_daily_cost.toLocaleString('en-IN')}/person
-            </span>
-          )}
-        </div>
-
-        <div className="timeline-container">
-          <div className="timeline-block morning">
-            <div className="time-badge">🌅 Morning</div>
-            <div className="time-content">
-              <p>{currentDayData.morning}</p>
+            <div className="day-card-right">
+              <span className="day-price-pill">₹{cost.toLocaleString('en-IN')}</span>
+              <img
+                src={SAMPLE_DAY_IMAGES[idx % SAMPLE_DAY_IMAGES.length]}
+                alt={d.title}
+                className="day-thumb-img"
+              />
             </div>
           </div>
-
-          <div className="timeline-block afternoon">
-            <div className="time-badge">☀️ Afternoon</div>
-            <div className="time-content">
-              <p>{currentDayData.afternoon}</p>
-            </div>
-          </div>
-
-          <div className="timeline-block evening">
-            <div className="time-badge">🌆 Evening</div>
-            <div className="time-content">
-              <p>{currentDayData.evening}</p>
-            </div>
-          </div>
-        </div>
-
-        {currentDayData.tips && (
-          <div className="day-tip-box">
-            <span className="tip-icon">💡</span>
-            <div>
-              <strong>Insider Tip:</strong> {currentDayData.tips}
-            </div>
-          </div>
-        )}
-      </div>
+        );
+      })}
     </div>
   );
 }
