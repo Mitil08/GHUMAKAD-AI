@@ -179,7 +179,7 @@ input, select, textarea {
 }
 
 /* ============================================================
-   Atmospheric Background (Liquid Mesh + Topographic Contours)
+   Atmospheric Background (Aurora Mesh + Precision Dot Grid)
    ============================================================ */
 .atmospheric-bg-root {
   position: fixed;
@@ -187,15 +187,32 @@ input, select, textarea {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  background-color: #080d16;
+  background-color: #080d17;
+}
+
+.cursor-light-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: background 0.15s ease-out;
+}
+
+.modern-dot-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at 50% 40%, #000 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000 30%, transparent 80%);
+  opacity: 0.7;
 }
 
 .mesh-orbs-wrap {
   position: absolute;
   inset: 0;
-  filter: blur(110px);
-  -webkit-filter: blur(110px);
-  opacity: 0.8;
+  filter: blur(80px);
+  -webkit-filter: blur(80px);
+  opacity: 0.65;
 }
 
 .mesh-orb {
@@ -206,85 +223,69 @@ input, select, textarea {
 }
 
 .orb-coral {
-  width: 650px;
-  height: 650px;
-  background: radial-gradient(circle, rgba(239, 90, 71, 0.5) 0%, rgba(239, 90, 71, 0) 70%);
-  top: -160px;
-  left: -80px;
-  animation: driftCoral 22s infinite alternate ease-in-out;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(239, 90, 71, 0.45) 0%, rgba(239, 90, 71, 0) 70%);
+  top: -100px;
+  left: 5%;
+  animation: driftCoral 18s infinite alternate ease-in-out;
 }
 
 .orb-teal {
-  width: 720px;
-  height: 720px;
+  width: 580px;
+  height: 580px;
   background: radial-gradient(circle, rgba(13, 148, 136, 0.45) 0%, rgba(13, 148, 136, 0) 70%);
   top: 15%;
-  right: -160px;
-  animation: driftTeal 26s infinite alternate ease-in-out;
+  right: -80px;
+  animation: driftTeal 22s infinite alternate ease-in-out;
 }
 
 .orb-violet {
-  width: 620px;
-  height: 620px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.38) 0%, rgba(99, 102, 241, 0) 70%);
-  bottom: -120px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(99, 102, 241, 0) 70%);
+  bottom: 5%;
   left: 20%;
-  animation: driftViolet 28s infinite alternate ease-in-out;
+  animation: driftViolet 24s infinite alternate ease-in-out;
 }
 
 .orb-amber {
-  width: 520px;
-  height: 520px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.32) 0%, rgba(245, 158, 11, 0) 70%);
-  bottom: 25%;
+  width: 440px;
+  height: 440px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.28) 0%, rgba(245, 158, 11, 0) 70%);
+  bottom: 20%;
   right: 15%;
   animation: driftAmber 20s infinite alternate ease-in-out;
 }
 
 @keyframes driftCoral {
   0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(140px, 90px, 0) scale(1.15); }
-  100% { transform: translate3d(60px, 160px, 0) scale(0.95); }
+  50% { transform: translate3d(80px, 60px, 0) scale(1.1); }
+  100% { transform: translate3d(40px, 110px, 0) scale(0.95); }
 }
 
 @keyframes driftTeal {
   0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(-130px, 110px, 0) scale(1.1); }
-  100% { transform: translate3d(-60px, -90px, 0) scale(0.9); }
+  50% { transform: translate3d(-80px, 70px, 0) scale(1.08); }
+  100% { transform: translate3d(-40px, -60px, 0) scale(0.92); }
 }
 
 @keyframes driftViolet {
   0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(110px, -130px, 0) scale(1.2); }
-  100% { transform: translate3d(-90px, -40px, 0) scale(0.95); }
+  50% { transform: translate3d(70px, -80px, 0) scale(1.15); }
+  100% { transform: translate3d(-50px, -30px, 0) scale(0.95); }
 }
 
 @keyframes driftAmber {
   0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(-110px, -70px, 0) scale(1.12); }
-  100% { transform: translate3d(90px, -110px, 0) scale(0.9); }
+  50% { transform: translate3d(-60px, -40px, 0) scale(1.1); }
+  100% { transform: translate3d(60px, -70px, 0) scale(0.9); }
 }
 
-/* Topographic Contours Layer */
-.topographic-contours-layer {
-  position: absolute;
-  inset: -25px;
-  pointer-events: none;
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1);
-  will-change: transform;
-}
-
-.topo-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* Vignette Layer */
 .vignette-layer {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 45%, transparent 25%, rgba(8, 13, 22, 0.6) 70%, rgba(8, 13, 22, 0.96) 100%);
+  background: radial-gradient(circle at 50% 40%, transparent 20%, rgba(8, 13, 23, 0.45) 60%, rgba(8, 13, 23, 0.95) 100%);
 }
 
 .app-root {
