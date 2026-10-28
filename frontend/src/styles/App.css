@@ -96,12 +96,12 @@
 
 /* Hero Section */
 .hero-section {
-  padding: 72px 0 48px;
+  padding: 56px 0 36px;
   text-align: center;
 }
 
 .hero-content {
-  max-width: 840px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
@@ -115,12 +115,14 @@
   letter-spacing: -0.03em;
   margin-bottom: 20px;
   line-height: 1.15;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
 }
 
 .hero-gradient-text {
   background: linear-gradient(135deg, #ef5a47 0%, #f59e0b 50%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(239, 90, 71, 0.35));
 }
 
 .hero-description {
@@ -128,6 +130,7 @@
   color: var(--text-muted);
   margin-bottom: 32px;
   line-height: 1.6;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 .hero-actions {
